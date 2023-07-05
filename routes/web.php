@@ -21,24 +21,26 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 |
 */
 
+Route::get('/trigger-500-error', function () { abort(500); });
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::resource('/posts', PostController::class);
+    Route::resource('/observations', ObservationController::class);
+    Route::resource('/locations', LocationController::class);
+    Route::resource('/locations/contact', LocationController::class);
+});
 Route::get('/', function () {
     // Take the 3 newest posts
     $latestPosts = Post::orderBy('published_at', 'desc')->take(3)->get();
 
     return view('welcome', compact('latestPosts'));
-})->name('home');
+})->middleware('auth')->name('home');
 
-
-// Resource routes of the base pages.
-Route::resource('/posts', PostController::class);
-Route::resource('/observations', ObservationController::class);
-Route::resource('/locations', LocationController::class);
-Route::get('/trigger-500-error', function () { abort(500); });
-Route::resource('/locations/contact', LocationController::class);
 
 
 Auth::routes();
-
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 // User registration routes
 Route::get('/register', 'App\Http\Controllers\Auth\RegisterController@showRegistrationForm')->name('register');
